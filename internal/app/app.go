@@ -528,7 +528,7 @@ func Run(args []string, version string) error {
 	if err != nil {
 		return err
 	}
-	if o.SessionPath != "" && !sameDir(store.Header().Cwd, cwd) {
+	if o.SessionPath != "" && !session.SameDir(store.Header().Cwd, cwd) {
 		confirmed, err := confirmWorkspaceMismatch(console, lifecycle, store.Header().Cwd, cwd)
 		if err != nil {
 			return err
@@ -822,18 +822,6 @@ func envMap() map[string]string {
 	return m
 }
 
-// sameDir reports whether two paths name one directory. Temporary directories
-// on macOS sit behind a /var to /private/var symlink, so a textual
-// comparison alone prompts to resume sessions unnecessarily.
-func sameDir(a, b string) bool {
-	if filepath.Clean(a) == filepath.Clean(b) {
-		return true
-	}
-	ra, ea := filepath.EvalSymlinks(a)
-	rb, eb := filepath.EvalSymlinks(b)
-	return ea == nil && eb == nil && ra == rb
-}
-
 func askProjectConsent(o Options, cwd string, console *terminal.Console, lifecycle *terminalLifecycle) (bool, error) {
 	if o.DenyProj {
 		return false, nil
@@ -944,7 +932,7 @@ func workspaceSessions(dir, cwd string) ([]session.SessionInfo, error) {
 	}
 	var mine []session.SessionInfo
 	for _, info := range infos {
-		if info.Cwd == cwd {
+		if session.SameDir(info.Cwd, cwd) {
 			mine = append(mine, info)
 		}
 	}
