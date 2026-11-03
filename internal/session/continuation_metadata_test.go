@@ -81,6 +81,8 @@ func TestContinuationMetadataParity(t *testing.T) {
 			continuationLine("custom_message", "cm1", "", `,"customType":"ext","content":{"bad":true},"display":true`)}, false},
 		{"custom message alias content ignored", []string{
 			continuationLine("custom_message", "cm1", "", `,"customType":"ext","Content":{"bad":true},"display":true`)}, true},
+		{"compaction system alias content ignored", []string{
+			continuationLine("compaction", "cp", "", `,"summary":"s","firstKeptEntryId":"cp","tokensBefore":1,"systemMessage":{"role":"system","Content":[{"type":"image","data":"eA==","mimeType":"image/png"}]}`)}, true},
 		{"context edit repairs assistant", []string{user,
 			continuationLine("message", "a1", "u1", `,"message":{"role":"assistant","content":[{"type":"mystery"}]}`),
 			continuationLine("context_edit", "e1", "a1", `,"targetId":"a1","replacement":{"content":[{"type":"text","text":"fixed"}]}`)}, true},
